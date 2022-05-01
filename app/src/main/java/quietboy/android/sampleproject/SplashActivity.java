@@ -11,6 +11,10 @@ import android.view.Window;
 import android.widget.TextView;
 
 import com.google.android.material.snackbar.Snackbar;
+import com.google.gson.Gson;
+
+import org.json.JSONArray;
+import org.json.JSONException;
 
 import java.io.IOException;
 
@@ -21,6 +25,8 @@ import okhttp3.Callback;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
+import quietboy.android.sampleproject.objs.BaseJSONContent;
+import quietboy.android.sampleproject.objs.ResultContent;
 
 public class SplashActivity extends AppCompatActivity {
 
@@ -111,7 +117,30 @@ public class SplashActivity extends AppCompatActivity {
                     h.post(new Runnable() {
                         @Override
                         public void run() {
-                            tvStat.setText("Network test successful.");
+                            try{
+                                String datacontent = response.body().string();
+//                                Log.d("Data",datacontent);
+                                Gson gg = new Gson();
+                                BaseJSONContent bb = gg.fromJson(datacontent,BaseJSONContent.class);
+                                ResultContent[] rr = bb.results;
+
+                                // For debug only
+                                for(int x=0;x<rr.length;x++){
+                                    if (rr[x].trackName != null){
+                                        Log.d("DataItem",rr[x].trackName);
+                                    }
+                                }
+
+                                h.post(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        tvStat.setText("Network test successful.");
+                                    }
+                                });
+                            }
+                            catch (IOException ioex){
+                                Log.e("Err data","Error loading data.");
+                            }
                         }
                     });
 
