@@ -44,4 +44,13 @@ public class ResultContent {
     public String trackViewUrl;
     public String wrapperType;
 
+
+    public Boolean trackPriceIsNull(){
+        return trackPrice == null;
+    }
+
+    public Boolean collectionPriceIsNull(){
+        return collectionPrice == null;
+    }
+
 }
