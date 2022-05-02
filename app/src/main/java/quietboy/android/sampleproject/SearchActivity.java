@@ -29,6 +29,7 @@ import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
 import quietboy.android.sampleproject.adapters.ItemAdapter;
+import quietboy.android.sampleproject.localdb.PrefHelper;
 import quietboy.android.sampleproject.objs.BaseJSONContent;
 import quietboy.android.sampleproject.objs.ResultContent;
 import quietboy.android.sampleproject.utils.StringUtils;
@@ -48,6 +49,7 @@ public class SearchActivity extends AppCompatActivity {
 
     private Handler h;
     private final OkHttpClient htc = new OkHttpClient();
+    private PrefHelper ph;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -57,14 +59,25 @@ public class SearchActivity extends AppCompatActivity {
         h = new Handler(this.getMainLooper());
         ButterKnife.bind(this);
 
+        ph = new PrefHelper(SearchActivity.this);
+
         bSearch.setOnClickListener(search);
+
+        eSearch.setText(ph.getLastQuery());
+        // Trick to some sort of persistence hehe
+        // need online.
+        bSearch.callOnClick();
+    }
+
+    @Override
+    protected void onDestroy() {
+        ph.saveQuery(eSearch.getText().toString());
+        super.onDestroy();
     }
 
     View.OnClickListener search = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
-
-
 
             String searchkey = eSearch.getText().toString();
 
@@ -119,6 +132,7 @@ public class SearchActivity extends AppCompatActivity {
                                             lContent.setAdapter(itemAdapter);
                                         }
                                         else{
+                                            lContent.setVisibility(View.GONE);
                                             tInstruc.setVisibility(View.VISIBLE);
                                             tInstruc.setText("There are no entries for that search term.");
                                         }
